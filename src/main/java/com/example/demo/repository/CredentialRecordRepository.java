@@ -14,7 +14,8 @@ public interface CredentialRecordRepository extends JpaRepository<CredentialReco
 
     Optional<CredentialRecord> findByCredentialCode(String code);
 
-    List<CredentialRecord> findExpiryDateBefore(LocalDate date);
+  List<CredentialRecord> findByExpiryDateBefore(LocalDate date);
+
 
     @Query("FROM CredentialRecord c WHERE c.status = :status")
     List<CredentialRecord> findByStatusUsingHql(@Param("status") String status);
