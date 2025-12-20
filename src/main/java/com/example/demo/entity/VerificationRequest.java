@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "verification_requests")
 public class VerificationRequest {
 
     @Id
@@ -17,4 +16,13 @@ public class VerificationRequest {
     private String status;
     private LocalDateTime verifiedAt;
     private String resultMessage;
+
+    // getters & setters
+    public Long getId() { return id; }
+
+    public Long getCredentialId() { return credentialId; }
+    public void setCredentialId(Long credentialId) { this.credentialId = credentialId; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

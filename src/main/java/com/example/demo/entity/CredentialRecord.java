@@ -5,10 +5,6 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-@Table(
-    name = "credential_records",
-    uniqueConstraints = @UniqueConstraint(columnNames = "credentialCode")
-)
 public class CredentialRecord {
 
     @Id
@@ -16,7 +12,10 @@ public class CredentialRecord {
     private Long id;
 
     private Long holderId;
+
+    @Column(unique = true)
     private String credentialCode;
+
     private String title;
     private String issuer;
     private LocalDate issueDate;
@@ -24,14 +23,24 @@ public class CredentialRecord {
     private String credentialType;
     private String status;
 
-    @Column(length = 2000)
+    @Column(columnDefinition = "TEXT")
     private String metadataJson;
 
     @ManyToMany
-    @JoinTable(
-        name = "credential_verification_rules",
-        joinColumns = @JoinColumn(name = "credential_id"),
-        inverseJoinColumns = @JoinColumn(name = "rule_id")
-    )
     private Set<VerificationRule> rules;
+
+    // getters & setters
+    public Long getId() { return id; }
+
+    public Long getHolderId() { return holderId; }
+    public void setHolderId(Long holderId) { this.holderId = holderId; }
+
+    public String getCredentialCode() { return credentialCode; }
+    public void setCredentialCode(String credentialCode) { this.credentialCode = credentialCode; }
+
+    public LocalDate getExpiryDate() { return expiryDate; }
+    public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

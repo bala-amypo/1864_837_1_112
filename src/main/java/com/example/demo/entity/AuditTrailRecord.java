@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "audit_trail_records")
 public class AuditTrailRecord {
 
     @Id
@@ -14,10 +13,17 @@ public class AuditTrailRecord {
     private Long credentialId;
     private String eventType;
     private String details;
+
     private LocalDateTime loggedAt;
 
     @PrePersist
-    void onLog() {
-        this.loggedAt = LocalDateTime.now();
+    public void onCreate() {
+        loggedAt = LocalDateTime.now();
     }
+
+    // getters & setters
+    public Long getId() { return id; }
+
+    public Long getCredentialId() { return credentialId; }
+    public void setCredentialId(Long credentialId) { this.credentialId = credentialId; }
 }
