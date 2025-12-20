@@ -69,3 +69,4 @@ public class VerificationRequest {
         this.resultMessage = resultMessage;
     }
 }
+
