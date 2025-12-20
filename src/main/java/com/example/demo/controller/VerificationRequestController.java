@@ -1,73 +1,48 @@
-package com.example.demo.entity;
+package com.example.demo.controller;
 
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import com.example.demo.entity.VerificationRequest;
+import com.example.demo.service.VerificationRequestService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Entity
-public class VerificationRequest {
+import java.util.List;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@RestController
+@RequestMapping("/api/verification")
+@Tag(name = "Verification Requests")
+public class VerificationRequestController {
 
-    private Long credentialId;
-    private String requestedBy;
-    private String verificationMethod;
-    private String status;
-    private LocalDateTime verifiedAt;
-    private String resultMessage;
+    private final VerificationRequestService service;
 
-    // -------- GETTERS & SETTERS --------
-
-    public Long getId() {
-        return id;
+    public VerificationRequestController(
+            VerificationRequestService service) {
+        this.service = service;
     }
 
-    public Long getCredentialId() {
-        return credentialId;
+    @PostMapping
+    public ResponseEntity<VerificationRequest> initiate(
+            @RequestBody VerificationRequest request) {
+        return ResponseEntity.ok(
+                service.initiateVerification(request));
     }
 
-    public void setCredentialId(Long credentialId) {
-        this.credentialId = credentialId;
+    @PutMapping("/{id}/process")
+    public ResponseEntity<VerificationRequest> process(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(
+                service.processVerification(id));
     }
 
-    public String getRequestedBy() {
-        return requestedBy;
+    @GetMapping("/credential/{credentialId}")
+    public ResponseEntity<List<VerificationRequest>> byCredential(
+            @PathVariable Long credentialId) {
+        return ResponseEntity.ok(
+                service.getRequestsByCredential(credentialId));
     }
 
-    public void setRequestedBy(String requestedBy) {
-        this.requestedBy = requestedBy;
-    }
-
-    public String getVerificationMethod() {
-        return verificationMethod;
-    }
-
-    public void setVerificationMethod(String verificationMethod) {
-        this.verificationMethod = verificationMethod;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getVerifiedAt() {
-        return verifiedAt;
-    }
-
-    public void setVerifiedAt(LocalDateTime verifiedAt) {
-        this.verifiedAt = verifiedAt;
-    }
-
-    public String getResultMessage() {
-        return resultMessage;
-    }
-
-    public void setResultMessage(String resultMessage) {
-        this.resultMessage = resultMessage;
+    @GetMapping
+    public ResponseEntity<List<VerificationRequest>> all() {
+        return ResponseEntity.ok(service.getAllRequests());
     }
 }
