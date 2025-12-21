@@ -4,28 +4,21 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "audit_trail_record")
 public class AuditTrailRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "credential_id")
     private Long credentialId;
-
-    @Column(name = "event_type", nullable = false)
     private String eventType;
-
-    @Column(columnDefinition = "TEXT")
     private String details;
 
-    @Column(name = "logged_at", nullable = false)
     private LocalDateTime loggedAt;
 
     @PrePersist
-    protected void onCreate() {
-        this.loggedAt = LocalDateTime.now();
+    public void onCreate() {
+        loggedAt = LocalDateTime.now();
     }
 
     // -------- GETTERS & SETTERS --------

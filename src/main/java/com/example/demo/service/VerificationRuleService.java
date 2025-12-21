@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.VerificationRule;
-import com.example.demo.entity.CredentialRecord;
 
 import java.util.List;
 
@@ -14,7 +13,4 @@ public interface VerificationRuleService {
     List<VerificationRule> getActiveRules();
 
     List<VerificationRule> getAllRules();
-
-    // <-- ADD THIS METHOD
-    boolean validateRules(CredentialRecord credential);
 }

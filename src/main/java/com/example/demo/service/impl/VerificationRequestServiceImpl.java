@@ -16,7 +16,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class VerificationRequestServiceImpl implements VerificationRequestService {
+public class VerificationRequestServiceImpl
+        implements VerificationRequestService {
 
     private final VerificationRequestRepository repository;
     private final CredentialRecordService credentialService;
@@ -36,43 +37,52 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
     }
 
     @Override
-    public VerificationRequest initiateVerification(VerificationRequest request) {
-        request.setStatus("PENDING");
+    public VerificationRequest initiateVerification(
+            VerificationRequest request) {
         return repository.save(request);
     }
 
     @Override
     public VerificationRequest processVerification(Long requestId) {
+
         VerificationRequest request = repository.findById(requestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Request not found"));
 
-        CredentialRecord credential = credentialService.getCredentialById(request.getCredentialId());
+        CredentialRecord credential =
+                credentialService.getCredentialByCode(
+                        credentialService
+                                .getAllCredentials()
+                                .stream()
+                                .filter(c -> c.getId()
+                                        .equals(request.getCredentialId()))
+                                .findFirst()
+                                .orElseThrow()
+                                .getCredentialCode()
+                );
 
-        boolean valid = true;
-
-        if (credential.getExpiryDate() != null && credential.getExpiryDate().isBefore(LocalDate.now())) {
-            valid = false;
+        if (credential.getExpiryDate() != null &&
+                credential.getExpiryDate().isBefore(LocalDate.now())) {
+            request.setStatus("FAILED");
+        } else {
+            request.setStatus("SUCCESS");
         }
 
-        boolean rulesValid = ruleService.validateRules(credential);
-        if (!rulesValid) {
-            valid = false;
-        }
-
-        request.setStatus(valid ? "SUCCESS" : "FAILED");
         request.setVerifiedAt(LocalDateTime.now());
 
         AuditTrailRecord audit = new AuditTrailRecord();
         audit.setCredentialId(request.getCredentialId());
         audit.setEventType("VERIFICATION");
         audit.setDetails(request.getStatus());
+
         auditService.logEvent(audit);
 
         return repository.save(request);
     }
 
     @Override
-    public List<VerificationRequest> getRequestsByCredential(Long credentialId) {
+    public List<VerificationRequest> getRequestsByCredential(
+            Long credentialId) {
         return repository.findByCredentialId(credentialId);
     }
 
