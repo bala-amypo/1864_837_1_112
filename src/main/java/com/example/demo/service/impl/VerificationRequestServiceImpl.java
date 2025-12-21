@@ -43,23 +43,17 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
 
     @Override
     public VerificationRequest processVerification(Long requestId) {
-
         VerificationRequest request = repository.findById(requestId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Request not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
 
-        CredentialRecord credential =
-                credentialService.getCredentialById(request.getCredentialId());
+        CredentialRecord credential = credentialService.getCredentialById(request.getCredentialId());
 
         boolean valid = true;
 
-        // Expiry validation
-        if (credential.getExpiryDate() != null &&
-                credential.getExpiryDate().isBefore(LocalDate.now())) {
+        if (credential.getExpiryDate() != null && credential.getExpiryDate().isBefore(LocalDate.now())) {
             valid = false;
         }
 
-        // Rule validation
         boolean rulesValid = ruleService.validateRules(credential);
         if (!rulesValid) {
             valid = false;
@@ -68,12 +62,10 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
         request.setStatus(valid ? "SUCCESS" : "FAILED");
         request.setVerifiedAt(LocalDateTime.now());
 
-        // Audit logging
         AuditTrailRecord audit = new AuditTrailRecord();
         audit.setCredentialId(request.getCredentialId());
         audit.setEventType("VERIFICATION");
         audit.setDetails(request.getStatus());
-
         auditService.logEvent(audit);
 
         return repository.save(request);
