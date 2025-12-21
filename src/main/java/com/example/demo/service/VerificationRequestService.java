@@ -4,10 +4,12 @@ import com.example.demo.entity.VerificationRequest;
 import com.example.demo.entity.CredentialRecord;
 import com.example.demo.entity.AuditTrailRecord;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.VerificationRequestRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class VerificationRequestService {
@@ -24,7 +26,7 @@ public class VerificationRequestService {
         this.auditTrailService = auditTrailService;
     }
 
-    @Override
+    // Process a verification request
     public VerificationRequest processVerification(Long requestId) {
         VerificationRequest request = repository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
@@ -49,6 +51,21 @@ public class VerificationRequestService {
 
         auditTrailService.logEvent(audit);
 
+        return repository.save(request);
+    }
+
+    // Get all requests for a specific credential
+    public List<VerificationRequest> getRequestsByCredential(Long credentialId) {
+        return repository.findByCredentialId(credentialId);
+    }
+
+    // Get all requests
+    public List<VerificationRequest> getAllRequests() {
+        return repository.findAll();
+    }
+
+    // Initiate a new verification request
+    public VerificationRequest initiateVerification(VerificationRequest request) {
         return repository.save(request);
     }
 }

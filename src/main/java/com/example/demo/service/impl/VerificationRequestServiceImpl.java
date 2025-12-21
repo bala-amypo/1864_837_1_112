@@ -16,8 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class VerificationRequestServiceImpl
-        implements VerificationRequestService {
+public class VerificationRequestServiceImpl implements VerificationRequestService {
 
     private final VerificationRequestRepository repository;
     private final CredentialRecordService credentialService;
@@ -37,9 +36,7 @@ public class VerificationRequestServiceImpl
     }
 
     @Override
-    public VerificationRequest initiateVerification(
-            VerificationRequest request) {
-
+    public VerificationRequest initiateVerification(VerificationRequest request) {
         request.setStatus("PENDING");
         return repository.save(request);
     }
@@ -51,23 +48,19 @@ public class VerificationRequestServiceImpl
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Request not found"));
 
-        // ✅ Correct way: fetch credential directly
         CredentialRecord credential =
-                credentialService.getCredentialById(
-                        request.getCredentialId());
+                credentialService.getCredentialById(request.getCredentialId());
 
         boolean valid = true;
 
-        // ✅ Expiry validation
+        // Expiry validation
         if (credential.getExpiryDate() != null &&
                 credential.getExpiryDate().isBefore(LocalDate.now())) {
             valid = false;
         }
 
-        // ✅ Rule validation (even if simple)
-        boolean rulesValid =
-                ruleService.validateRules(credential);
-
+        // Rule validation
+        boolean rulesValid = ruleService.validateRules(credential);
         if (!rulesValid) {
             valid = false;
         }
@@ -75,7 +68,7 @@ public class VerificationRequestServiceImpl
         request.setStatus(valid ? "SUCCESS" : "FAILED");
         request.setVerifiedAt(LocalDateTime.now());
 
-        // ✅ Audit logging
+        // Audit logging
         AuditTrailRecord audit = new AuditTrailRecord();
         audit.setCredentialId(request.getCredentialId());
         audit.setEventType("VERIFICATION");
@@ -87,8 +80,7 @@ public class VerificationRequestServiceImpl
     }
 
     @Override
-    public List<VerificationRequest> getRequestsByCredential(
-            Long credentialId) {
+    public List<VerificationRequest> getRequestsByCredential(Long credentialId) {
         return repository.findByCredentialId(credentialId);
     }
 
