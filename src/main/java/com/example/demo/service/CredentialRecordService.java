@@ -15,4 +15,7 @@ public interface CredentialRecordService {
     CredentialRecord getCredentialByCode(String code);
 
     List<CredentialRecord> getAllCredentials();
+
+    // <-- ADD THIS METHOD
+    CredentialRecord getCredentialById(Long id);
 }
