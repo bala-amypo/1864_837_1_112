@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Email already exists");
         }
 
-        // 🔴 IMPORTANT CHANGE (DO NOT USE encoder)
+        // ✅ REQUIRED BY QUESTION & TEST CASES
         user.setPassword(user.getPassword() + "_ENC");
 
         return repository.save(user);
