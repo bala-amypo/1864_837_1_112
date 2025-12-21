@@ -39,6 +39,8 @@ public class VerificationRequestServiceImpl
     @Override
     public VerificationRequest initiateVerification(
             VerificationRequest request) {
+
+        request.setStatus("PENDING");
         return repository.save(request);
     }
 
@@ -49,27 +51,31 @@ public class VerificationRequestServiceImpl
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Request not found"));
 
+        // ✅ Correct way: fetch credential directly
         CredentialRecord credential =
-                credentialService.getCredentialByCode(
-                        credentialService
-                                .getAllCredentials()
-                                .stream()
-                                .filter(c -> c.getId()
-                                        .equals(request.getCredentialId()))
-                                .findFirst()
-                                .orElseThrow()
-                                .getCredentialCode()
-                );
+                credentialService.getCredentialById(
+                        request.getCredentialId());
 
+        boolean valid = true;
+
+        // ✅ Expiry validation
         if (credential.getExpiryDate() != null &&
                 credential.getExpiryDate().isBefore(LocalDate.now())) {
-            request.setStatus("FAILED");
-        } else {
-            request.setStatus("SUCCESS");
+            valid = false;
         }
 
+        // ✅ Rule validation (even if simple)
+        boolean rulesValid =
+                ruleService.validateRules(credential);
+
+        if (!rulesValid) {
+            valid = false;
+        }
+
+        request.setStatus(valid ? "SUCCESS" : "FAILED");
         request.setVerifiedAt(LocalDateTime.now());
 
+        // ✅ Audit logging
         AuditTrailRecord audit = new AuditTrailRecord();
         audit.setCredentialId(request.getCredentialId());
         audit.setEventType("VERIFICATION");
