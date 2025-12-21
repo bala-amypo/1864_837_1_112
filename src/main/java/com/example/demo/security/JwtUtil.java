@@ -1,38 +1,25 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.*;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    // ✅ MUST be static final
-    private static final String SECRET =
-            "secretkeysecretkeysecretkeysecretkey"; // ≥32 chars
-
-    private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 1 day
-
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes());
-    }
+    private final String SECRET = "secretkey";
+    private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
 
     public String generateToken(Long userId, String email, String role) {
 
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))        // ✅ REQUIRED
                 .claim("userId", userId)
                 .claim("email", email)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(
-                        new Date(System.currentTimeMillis() + EXPIRATION_TIME)
-                )
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }
 }

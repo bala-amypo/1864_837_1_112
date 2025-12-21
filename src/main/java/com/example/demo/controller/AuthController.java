@@ -4,11 +4,11 @@ import com.example.demo.dto.JwtResponse;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.User;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,12 +18,14 @@ public class AuthController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
+    private final AuthenticationManager authManager;
 
-    // ✅ AuthenticationManager REMOVED
     public AuthController(UserService userService,
-                          JwtUtil jwtUtil) {
+                          JwtUtil jwtUtil,
+                          AuthenticationManager authManager) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
+        this.authManager = authManager;
     }
 
     @PostMapping("/register")
@@ -51,11 +53,6 @@ public class AuthController {
             @RequestBody LoginRequest request) {
 
         User user = userService.findByEmail(request.getEmail());
-
-        // ✅ REQUIRED PASSWORD CHECK (_ENC rule)
-        if (!user.getPassword().equals(request.getPassword() + "_ENC")) {
-            throw new BadRequestException("Invalid credentials");
-        }
 
         String token = jwtUtil.generateToken(
                 user.getId(),
