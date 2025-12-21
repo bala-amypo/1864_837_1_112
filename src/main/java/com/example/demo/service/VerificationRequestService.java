@@ -1,17 +1,27 @@
-package com.example.demo.service;
+@Override
+public VerificationRequest processVerification(Long requestId) {
+    VerificationRequest request = repository.findById(requestId)
+            .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
 
-import com.example.demo.entity.VerificationRequest;
+    CredentialRecord credential =
+            credentialRecordService.getCredentialById(request.getCredentialId());
 
-import java.util.List;
+    if (credential.getExpiryDate().isBefore(LocalDate.now())) {
+        request.setStatus("FAILED");
+        request.setResultMessage("Credential expired");
+    } else {
+        request.setStatus("SUCCESS");
+        request.setResultMessage("Credential valid");
+    }
 
-public interface VerificationRequestService {
+    request.setVerifiedAt(LocalDateTime.now());
 
-    VerificationRequest initiateVerification(VerificationRequest request);
+    AuditTrailRecord audit = new AuditTrailRecord();
+    audit.setCredentialId(credential.getId());
+    audit.setEventType("VERIFICATION");
+    audit.setDetails(request.getStatus());
 
-    VerificationRequest processVerification(Long requestId);
+    auditTrailService.logEvent(audit);
 
-    List<VerificationRequest> getRequestsByCredential(Long credentialId);
-
-    List<VerificationRequest> getAllRequests();
+    return repository.save(request);
 }
-
