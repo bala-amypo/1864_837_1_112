@@ -1,28 +1,24 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Entity
+@Table(name = "credential_holder_profiles")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CredentialHolderProfile {
-
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String holderId;
-
-    private String fullName;
-
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String organization;
 
-    private boolean active = true;
-
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    // getters and setters
+    private Boolean active;
 }

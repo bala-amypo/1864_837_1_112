@@ -1,31 +1,22 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Entity
+@Table(name = "verification_rules")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class VerificationRule {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String ruleCode;
 
-    private String description;
-
-    private String appliesToType;
-
-    private String validationExpression;
-
-    private boolean active;
-
-    // getters & setters
-    public Long getId() { return id; }
-
-    public String getRuleCode() { return ruleCode; }
-    public void setRuleCode(String ruleCode) { this.ruleCode = ruleCode; }
-
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    private Boolean active;
 }
