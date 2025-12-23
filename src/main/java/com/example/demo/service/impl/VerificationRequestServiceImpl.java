@@ -2,9 +2,9 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.*;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.*;
-import com.example.demo.service.VerificationRequestService;
-import com.example.demo.service.AuditTrailService;
+import com.example.demo.repository.VerificationRequestRepository;
+import com.example.demo.repository.CredentialRecordRepository; // Still needed for internal logic
+import com.example.demo.service.*;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,18 +12,23 @@ import java.util.List;
 @Service
 public class VerificationRequestServiceImpl implements VerificationRequestService {
     private final VerificationRequestRepository requestRepo;
-    private final CredentialRecordRepository credentialRepo;
-    private final VerificationRuleRepository ruleRepo;
+    private final CredentialRecordService credentialService; // Service, not Repo
+    private final VerificationRuleService ruleService;      // Service, not Repo
     private final AuditTrailService auditService;
+    private final CredentialRecordRepository credentialRepo; // Required to fetch the entity
 
-    public VerificationRequestServiceImpl(VerificationRequestRepository requestRepo, 
-                                         CredentialRecordRepository credentialRepo,
-                                         VerificationRuleRepository ruleRepo,
-                                         AuditTrailService auditService) {
+    // Constructor Signature updated to match Test requirements (Step 0, Point 4)
+    public VerificationRequestServiceImpl(
+            VerificationRequestRepository requestRepo, 
+            CredentialRecordService credentialService, 
+            VerificationRuleService ruleService, 
+            AuditTrailService auditService,
+            CredentialRecordRepository credentialRepo) {
         this.requestRepo = requestRepo;
-        this.credentialRepo = credentialRepo;
-        this.ruleRepo = ruleRepo;
+        this.credentialService = credentialService;
+        this.ruleService = ruleService;
         this.auditService = auditService;
+        this.credentialRepo = credentialRepo;
     }
 
     @Override
@@ -36,20 +41,18 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
         VerificationRequest request = requestRepo.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
         
+        // Use credentialRepo to find the actual entity
         CredentialRecord credential = credentialRepo.findById(request.getCredentialId())
                 .orElseThrow(() -> new ResourceNotFoundException("Credential not found"));
 
-        // Logic: Fetch active rules (per PDF requirement)
-        ruleRepo.findByActiveTrue();
-
-        // Logic: Check expiry
+        // Business logic: expired check
         if (credential.getExpiryDate() != null && credential.getExpiryDate().isBefore(LocalDate.now())) {
             request.setStatus("FAILED");
         } else {
             request.setStatus("SUCCESS");
         }
 
-        // Logic: Log Audit event
+        // Audit Trail Requirement
         AuditTrailRecord audit = new AuditTrailRecord();
         audit.setCredentialId(credential.getId());
         auditService.logEvent(audit);
