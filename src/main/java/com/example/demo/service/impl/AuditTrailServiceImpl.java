@@ -4,19 +4,15 @@ import com.example.demo.entity.AuditTrailRecord;
 import com.example.demo.repository.AuditTrailRecordRepository;
 import com.example.demo.service.AuditTrailService;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class AuditTrailServiceImpl
-        implements AuditTrailService {
+public class AuditTrailServiceImpl implements AuditTrailService {
+    private final AuditTrailRecordRepository auditRepo;
 
-    private final AuditTrailRecordRepository repository;
-
-    public AuditTrailServiceImpl(
-            AuditTrailRecordRepository repository) {
-        this.repository = repository;
+    public AuditTrailServiceImpl(AuditTrailRecordRepository auditRepo) {
+        this.auditRepo = auditRepo;
     }
 
     @Override
@@ -24,16 +20,11 @@ public class AuditTrailServiceImpl
         if (record.getLoggedAt() == null) {
             record.setLoggedAt(LocalDateTime.now());
         }
-        return repository.save(record);
+        return auditRepo.save(record);
     }
 
     @Override
     public List<AuditTrailRecord> getLogsByCredential(Long credentialId) {
-        return repository.findByCredentialId(credentialId);
-    }
-
-    @Override
-    public List<AuditTrailRecord> getAllLogs() {
-        return repository.findAll();
+        return auditRepo.findByCredentialId(credentialId);
     }
 }
