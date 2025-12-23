@@ -8,7 +8,7 @@ import java.util.Set;
 public class CredentialRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     private Long holderId;
@@ -22,25 +22,10 @@ public class CredentialRecord {
     private LocalDate expiryDate;
     private String credentialType;
     private String status;
-
-    @Column(columnDefinition = "TEXT")
     private String metadataJson;
 
     @ManyToMany
     private Set<VerificationRule> rules;
 
-    // getters & setters
-    public Long getId() { return id; }
-
-    public Long getHolderId() { return holderId; }
-    public void setHolderId(Long holderId) { this.holderId = holderId; }
-
-    public String getCredentialCode() { return credentialCode; }
-    public void setCredentialCode(String credentialCode) { this.credentialCode = credentialCode; }
-
-    public LocalDate getExpiryDate() { return expiryDate; }
-    public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    // getters and setters
 }
