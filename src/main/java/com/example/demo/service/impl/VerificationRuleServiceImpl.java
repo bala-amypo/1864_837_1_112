@@ -1,48 +1,24 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.VerificationRule;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.VerificationRuleRepository;
 import com.example.demo.service.VerificationRuleService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class VerificationRuleServiceImpl
-        implements VerificationRuleService {
+public class VerificationRuleServiceImpl implements VerificationRuleService {
 
-    private final VerificationRuleRepository repository;
+    private final VerificationRuleRepository ruleRepo;
 
-    public VerificationRuleServiceImpl(
-            VerificationRuleRepository repository) {
-        this.repository = repository;
+    // Constructor Injection (Requirement 6.3)
+    public VerificationRuleServiceImpl(VerificationRuleRepository ruleRepo) {
+        this.ruleRepo = ruleRepo;
     }
 
     @Override
     public VerificationRule createRule(VerificationRule rule) {
-        return repository.save(rule);
-    }
-
-    @Override
-    public VerificationRule updateRule(Long id,
-                                       VerificationRule updatedRule) {
-
-        VerificationRule rule = repository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Rule not found"));
-
-        rule.setActive(updatedRule.isActive());
-        return repository.save(rule);
-    }
-
-    @Override
-    public List<VerificationRule> getActiveRules() {
-        return repository.findByActiveTrue();
-    }
-
-    @Override
-    public List<VerificationRule> getAllRules() {
-        return repository.findAll();
+        // Requirement: save the rule with ruleRepo.save(rule) and return it
+        // Note: ruleCode uniqueness is handled at the database level via @Column(unique = true)
+        return ruleRepo.save(rule);
     }
 }
