@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class AuditTrailRecord {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long credentialId;
@@ -17,9 +17,45 @@ public class AuditTrailRecord {
     private LocalDateTime loggedAt;
 
     @PrePersist
-    void onCreate() {
+    public void onCreate() {
         loggedAt = LocalDateTime.now();
     }
 
-    // getters and setters
+    // -------- GETTERS & SETTERS --------
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getCredentialId() {
+        return credentialId;
+    }
+
+    public void setCredentialId(Long credentialId) {
+        this.credentialId = credentialId;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public LocalDateTime getLoggedAt() {
+        return loggedAt;
+    }
+
+    public void setLoggedAt(LocalDateTime loggedAt) {
+        this.loggedAt = loggedAt;
+    }
 }
