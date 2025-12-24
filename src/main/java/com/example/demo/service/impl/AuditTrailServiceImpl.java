@@ -27,9 +27,4 @@ public class AuditTrailServiceImpl implements AuditTrailService {
     public List<AuditTrailRecord> getLogsByCredential(Long credentialId) {
         return auditRepo.findByCredentialId(credentialId);
     }
-
-    @Override
-    public List<AuditTrailRecord> getAllLogs() {
-        return auditRepo.findAll();
-    }
 }

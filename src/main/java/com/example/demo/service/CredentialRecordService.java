@@ -5,9 +5,9 @@ import java.util.List;
 
 public interface CredentialRecordService {
     CredentialRecord createCredential(CredentialRecord record);
-    CredentialRecord updateCredential(Long id, CredentialRecord updated);
+    CredentialRecord updateCredential(Long id, CredentialRecord update);
     List<CredentialRecord> getCredentialsByHolder(Long holderId);
     CredentialRecord getCredentialByCode(String code);
-    List<CredentialRecord> getAllCredentials();
-    CredentialRecord getById(Long id);
+    // Needed to fetch credential inside VerificationRequestService
+    CredentialRecord getById(Long id); 
 }

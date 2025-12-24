@@ -23,13 +23,8 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new BadRequestException("Email already exists");
         }
-        // Requirement: Stored passwords must differ from raw values
+        // Logic: Stored passwords must differ from raw values
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
-        if (user.getRole() == null) {
-            user.setRole("VIEWER");
-        }
-        
         return userRepository.save(user);
     }
 

@@ -9,11 +9,9 @@ import java.util.Optional;
 
 public interface CredentialRecordRepository extends JpaRepository<CredentialRecord, Long> {
     List<CredentialRecord> findByHolderId(Long holderId);
-    
-    // PDF Page 8 naming: code
-    Optional<CredentialRecord> findByCredentialCode(String code);
+    Optional<CredentialRecord> findByCredentialCode(String credentialCode);
 
-    // Requirement: findExpiredBefore(LocalDate date)
+    // Requirement: findExpiredBefore(LocalDate date) - Must use @Query
     @Query("SELECT c FROM CredentialRecord c WHERE c.expiryDate < ?1")
     List<CredentialRecord> findExpiredBefore(LocalDate date);
 
@@ -23,5 +21,5 @@ public interface CredentialRecordRepository extends JpaRepository<CredentialReco
 
     // Requirement: searchByIssuerAndType(String issuer, String type) - Must use @Query
     @Query("SELECT c FROM CredentialRecord c WHERE c.issuer = ?1 AND c.credentialType = ?2")
-    List<CredentialRecord> searchByIssuerAndType(String issuer, String type);
+    List<CredentialRecord> searchByIssuerAndType(String issuer, String credentialType);
 }
