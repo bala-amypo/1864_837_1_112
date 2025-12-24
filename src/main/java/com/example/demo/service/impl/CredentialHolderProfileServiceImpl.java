@@ -15,9 +15,11 @@ public class CredentialHolderProfileServiceImpl implements CredentialHolderProfi
     @Override public CredentialHolderProfile getHolderById(Long id) { return holderRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found")); }
     @Override public List<CredentialHolderProfile> getAllHolders() { return holderRepo.findAll(); }
     @Override public CredentialHolderProfile findByHolderId(String hid) { return holderRepo.findByHolderId(hid).orElseThrow(() -> new ResourceNotFoundException("Not found")); }
-    @Override public CredentialHolderProfile updateHolderStatus(Long id, boolean active) {
-        CredentialHolderProfile p = getHolderById(id);
-        p.setActive(active);
-        return holderRepo.save(p);
+    
+    @Override // Must match Interface name
+    public CredentialHolderProfile updateHolderStatus(Long id, boolean active) {
+        CredentialHolderProfile profile = getHolderById(id);
+        profile.setActive(active);
+        return holderRepo.save(profile);
     }
 }

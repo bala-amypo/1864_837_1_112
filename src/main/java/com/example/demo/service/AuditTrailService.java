@@ -5,5 +5,5 @@ import java.util.List;
 public interface AuditTrailService {
     AuditTrailRecord logEvent(AuditTrailRecord record);
     List<AuditTrailRecord> getLogsByCredential(Long credentialId);
-    List<AuditTrailRecord> getAllLogs();
+    List<AuditTrailRecord> getAllLogs(); // REQUIRED
 }

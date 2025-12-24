@@ -8,5 +8,5 @@ public interface CredentialRecordService {
     List<CredentialRecord> getCredentialsByHolder(Long holderId);
     CredentialRecord getCredentialByCode(String code);
     List<CredentialRecord> getAllCredentials();
-    CredentialRecord getById(Long id);
+    CredentialRecord getById(Long id); // REQUIRED
 }
