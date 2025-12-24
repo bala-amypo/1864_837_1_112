@@ -3,7 +3,6 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.*;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.VerificationRequestRepository;
-import com.example.demo.repository.CredentialRecordRepository; // Still needed for internal logic
 import com.example.demo.service.*;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -12,23 +11,20 @@ import java.util.List;
 @Service
 public class VerificationRequestServiceImpl implements VerificationRequestService {
     private final VerificationRequestRepository requestRepo;
-    private final CredentialRecordService credentialService; // Service, not Repo
-    private final VerificationRuleService ruleService;      // Service, not Repo
+    private final CredentialRecordService credentialService;
+    private final VerificationRuleService ruleService;
     private final AuditTrailService auditService;
-    private final CredentialRecordRepository credentialRepo; // Required to fetch the entity
 
-    // Constructor Signature updated to match Test requirements (Step 0, Point 4)
+    // TEST SUITE REQUIREMENT: Exactly these 4 arguments
     public VerificationRequestServiceImpl(
             VerificationRequestRepository requestRepo, 
             CredentialRecordService credentialService, 
             VerificationRuleService ruleService, 
-            AuditTrailService auditService,
-            CredentialRecordRepository credentialRepo) {
+            AuditTrailService auditService) {
         this.requestRepo = requestRepo;
         this.credentialService = credentialService;
         this.ruleService = ruleService;
         this.auditService = auditService;
-        this.credentialRepo = credentialRepo;
     }
 
     @Override
@@ -41,18 +37,17 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
         VerificationRequest request = requestRepo.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
         
-        // Use credentialRepo to find the actual entity
-        CredentialRecord credential = credentialRepo.findById(request.getCredentialId())
-                .orElseThrow(() -> new ResourceNotFoundException("Credential not found"));
+        // Use the injected service to get the credential
+        CredentialRecord credential = credentialService.getById(request.getCredentialId());
 
-        // Business logic: expired check
+        // Logic: SUCCESS if not expired, FAILED if expired
         if (credential.getExpiryDate() != null && credential.getExpiryDate().isBefore(LocalDate.now())) {
             request.setStatus("FAILED");
         } else {
             request.setStatus("SUCCESS");
         }
 
-        // Audit Trail Requirement
+        // Audit Trail requirement
         AuditTrailRecord audit = new AuditTrailRecord();
         audit.setCredentialId(credential.getId());
         auditService.logEvent(audit);
