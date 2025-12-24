@@ -1,5 +1,4 @@
 package com.example.demo.service.impl;
-
 import com.example.demo.entity.CredentialRecord;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CredentialRecordRepository;
@@ -10,50 +9,26 @@ import java.util.List;
 
 @Service
 public class CredentialRecordServiceImpl implements CredentialRecordService {
-    private final CredentialRecordRepository credentialRepo;
+    private final CredentialRecordRepository repo;
+    public CredentialRecordServiceImpl(CredentialRecordRepository repo) { this.repo = repo; }
 
-    public CredentialRecordServiceImpl(CredentialRecordRepository credentialRepo) {
-        this.credentialRepo = credentialRepo;
+    @Override public CredentialRecord getById(Long id) { return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found")); }
+    @Override public List<CredentialRecord> getAllCredentials() { return repo.findAll(); }
+    @Override public List<CredentialRecord> getCredentialsByHolder(Long hid) { return repo.findByHolderId(hid); }
+    @Override public CredentialRecord getCredentialByCode(String code) { return repo.findByCredentialCode(code).orElse(null); }
+
+    @Override public CredentialRecord createCredential(CredentialRecord r) {
+        if (r.getStatus() == null) r.setStatus("VALID");
+        if (r.getExpiryDate() != null && r.getExpiryDate().isBefore(LocalDate.now())) r.setStatus("EXPIRED");
+        return repo.save(r);
     }
 
-    @Override
-    public CredentialRecord createCredential(CredentialRecord record) {
-        // Requirement: Default status "VALID" if null
-        if (record.getStatus() == null) {
-            record.setStatus("VALID");
-        }
-        // Requirement: If expired, set status EXPIRED
-        if (record.getExpiryDate() != null && record.getExpiryDate().isBefore(LocalDate.now())) {
-            record.setStatus("EXPIRED");
-        }
-        return credentialRepo.save(record);
-    }
-
-    @Override
-    public CredentialRecord updateCredential(Long id, CredentialRecord updated) {
-        CredentialRecord existing = credentialRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Credential not found"));
-        // Copy updatable fields
-        existing.setCredentialCode(updated.getCredentialCode());
-        existing.setTitle(updated.getTitle());
-        existing.setIssuer(updated.getIssuer());
-        existing.setExpiryDate(updated.getExpiryDate());
-        existing.setMetadataJson(updated.getMetadataJson());
-        return credentialRepo.save(existing);
-    }
-
-    @Override
-    public List<CredentialRecord> getCredentialsByHolder(Long holderId) {
-        return credentialRepo.findByHolderId(holderId);
-    }
-
-    @Override
-    public CredentialRecord getCredentialByCode(String code) {
-        return credentialRepo.findByCredentialCode(code).orElse(null);
-    }
-
-    @Override
-    public List<CredentialRecord> getAllCredentials() {
-        return credentialRepo.findAll();
+    @Override public CredentialRecord updateCredential(Long id, CredentialRecord u) {
+        CredentialRecord e = getById(id);
+        e.setCredentialCode(u.getCredentialCode());
+        e.setTitle(u.getTitle());
+        e.setIssuer(u.getIssuer());
+        e.setExpiryDate(u.getExpiryDate());
+        return repo.save(e);
     }
 }
