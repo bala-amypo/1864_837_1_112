@@ -9,9 +9,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/audit")
 public class AuditTrailController {
+
     private final AuditTrailService auditService;
 
-    public AuditTrailController(AuditTrailService auditService) { this.auditService = auditService; }
+    public AuditTrailController(AuditTrailService auditService) {
+        this.auditService = auditService;
+    }
 
     @PostMapping
     public ResponseEntity<AuditTrailRecord> log(@RequestBody AuditTrailRecord record) {
@@ -21,10 +24,5 @@ public class AuditTrailController {
     @GetMapping("/credential/{credentialId}")
     public ResponseEntity<List<AuditTrailRecord>> getByCredential(@PathVariable Long credentialId) {
         return ResponseEntity.ok(auditService.getLogsByCredential(credentialId));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<AuditTrailRecord>> getAll() {
-        return ResponseEntity.ok(auditService.getAllLogs());
     }
 }
