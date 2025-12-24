@@ -6,10 +6,8 @@ public class JwtResponse {
     private String email;
     private String role;
 
-    // Default constructor
     public JwtResponse() {}
 
-    // Constructor with fields (often used in AuthController)
     public JwtResponse(String token, Long id, String email, String role) {
         this.token = token;
         this.id = id;
@@ -17,7 +15,6 @@ public class JwtResponse {
         this.role = role;
     }
 
-    // Getters and Setters
     public String getToken() { return token; }
     public void setToken(String token) { this.token = token; }
 
