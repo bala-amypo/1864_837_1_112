@@ -17,26 +17,28 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
     }
 
     @Override
-    public CredentialRecord getById(Long id) {
-        return credentialRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Credential not found"));
-    }
-
-    @Override
     public CredentialRecord createCredential(CredentialRecord record) {
+        // Requirement: Default status "VALID" if null
+        if (record.getStatus() == null) {
+            record.setStatus("VALID");
+        }
+        // Requirement: If expired, set status EXPIRED
         if (record.getExpiryDate() != null && record.getExpiryDate().isBefore(LocalDate.now())) {
             record.setStatus("EXPIRED");
-        } else if (record.getStatus() == null) {
-            record.setStatus("VALID");
         }
         return credentialRepo.save(record);
     }
 
     @Override
-    public CredentialRecord updateCredential(Long id, CredentialRecord update) {
-        CredentialRecord existing = getById(id);
-        existing.setCredentialCode(update.getCredentialCode());
-        existing.setTitle(update.getTitle());
+    public CredentialRecord updateCredential(Long id, CredentialRecord updated) {
+        CredentialRecord existing = credentialRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Credential not found"));
+        // Copy updatable fields
+        existing.setCredentialCode(updated.getCredentialCode());
+        existing.setTitle(updated.getTitle());
+        existing.setIssuer(updated.getIssuer());
+        existing.setExpiryDate(updated.getExpiryDate());
+        existing.setMetadataJson(updated.getMetadataJson());
         return credentialRepo.save(existing);
     }
 
@@ -48,5 +50,10 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
     @Override
     public CredentialRecord getCredentialByCode(String code) {
         return credentialRepo.findByCredentialCode(code).orElse(null);
+    }
+
+    @Override
+    public List<CredentialRecord> getAllCredentials() {
+        return credentialRepo.findAll();
     }
 }
