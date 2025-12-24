@@ -6,10 +6,8 @@ public class RegisterRequest {
     private String password;
     private String role;
 
-    // Default constructor
     public RegisterRequest() {}
 
-    // Getters and Setters
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
 
