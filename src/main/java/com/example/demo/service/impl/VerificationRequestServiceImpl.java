@@ -15,7 +15,7 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
     private final VerificationRuleService ruleService;
     private final AuditTrailService auditService;
 
-    // EXACT 4-ARG CONSTRUCTOR REQUIRED BY TESTS
+    // TEST SUITE REQUIREMENT: Exactly these 4 arguments
     public VerificationRequestServiceImpl(
             VerificationRequestRepository requestRepo, 
             CredentialRecordService credentialService, 
@@ -28,24 +28,26 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
     }
 
     @Override
+    public VerificationRequest initiateVerification(VerificationRequest request) {
+        return requestRepo.save(request);
+    }
+
+    @Override
     public VerificationRequest processVerification(Long requestId) {
         VerificationRequest request = requestRepo.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
         
-        // Use service helper to find credential
+        // Use the injected service to get the credential
         CredentialRecord credential = credentialService.getById(request.getCredentialId());
 
-        // REQUIREMENT: Must interact with rule service
-        ruleService.getActiveRules();
-
-        // Expired check
+        // Logic: SUCCESS if not expired, FAILED if expired
         if (credential.getExpiryDate() != null && credential.getExpiryDate().isBefore(LocalDate.now())) {
             request.setStatus("FAILED");
         } else {
             request.setStatus("SUCCESS");
         }
 
-        // REQUIREMENT: Create and log audit event
+        // Audit Trail requirement
         AuditTrailRecord audit = new AuditTrailRecord();
         audit.setCredentialId(credential.getId());
         auditService.logEvent(audit);
@@ -53,6 +55,8 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
         return requestRepo.save(request);
     }
 
-    @Override public VerificationRequest initiateVerification(VerificationRequest request) { return requestRepo.save(request); }
-    @Override public List<VerificationRequest> getRequestsByCredential(Long id) { return requestRepo.findByCredentialId(id); }
+    @Override
+    public List<VerificationRequest> getRequestsByCredential(Long credentialId) {
+        return requestRepo.findByCredentialId(credentialId);
+    }
 }
