@@ -4,6 +4,7 @@ import com.example.demo.entity.CredentialHolderProfile;
 import com.example.demo.service.CredentialHolderProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/holders")
@@ -27,6 +28,11 @@ public class CredentialHolderController {
 
     @PutMapping("/{id}/status")
     public ResponseEntity<CredentialHolderProfile> updateStatus(@PathVariable Long id, @RequestParam boolean active) {
-        return ResponseEntity.ok(holderService.updateStatus(id, active));
+        return ResponseEntity.ok(holderService.updateHolderStatus(id, active));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CredentialHolderProfile>> getAll() {
+        return ResponseEntity.ok(holderService.getAllHolders());
     }
 }
