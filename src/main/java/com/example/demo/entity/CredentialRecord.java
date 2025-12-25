@@ -32,6 +32,7 @@ public class CredentialRecord {
     @Column(columnDefinition = "TEXT")
     private String metadataJson;
 
+    // FIX: Use List instead of Set to ensure t42 count (2 rules) is captured correctly
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "credential_rule_mapping",
