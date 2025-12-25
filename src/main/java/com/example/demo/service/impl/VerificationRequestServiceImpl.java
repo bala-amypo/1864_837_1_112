@@ -6,6 +6,7 @@ import com.example.demo.repository.VerificationRequestRepository;
 import com.example.demo.service.*;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -15,7 +16,6 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
     private final VerificationRuleService ruleService;
     private final AuditTrailService auditService;
 
-    // TEST SUITE REQUIREMENT: Exactly these 4 arguments
     public VerificationRequestServiceImpl(
             VerificationRequestRepository requestRepo, 
             CredentialRecordService credentialService, 
@@ -29,6 +29,7 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
 
     @Override
     public VerificationRequest initiateVerification(VerificationRequest request) {
+        if (request.getStatus() == null) request.setStatus("PENDING");
         return requestRepo.save(request);
     }
 
@@ -37,19 +38,39 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
         VerificationRequest request = requestRepo.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
         
-        // Use the injected service to get the credential
-        CredentialRecord credential = credentialService.getById(request.getCredentialId());
+        CredentialRecord credential = null;
 
-        // Logic: SUCCESS if not expired, FAILED if expired
-        if (credential.getExpiryDate() != null && credential.getExpiryDate().isBefore(LocalDate.now())) {
+        // Robust Lookup: Try ID first, then Code
+        if (request.getCredentialId() != null) {
+            try {
+                credential = credentialService.getById(request.getCredentialId());
+            } catch (ResourceNotFoundException e) {
+                // Fallback to code if ID lookup fails
+            }
+        }
+        
+        if (credential == null && request.getCredentialCode() != null) {
+            credential = credentialService.getCredentialByCode(request.getCredentialCode());
+        }
+
+        if (credential == null) {
+            throw new ResourceNotFoundException("Credential not found");
+        }
+
+        // Processing Logic
+        boolean isExpired = credential.getExpiryDate() != null && 
+                           credential.getExpiryDate().isBefore(LocalDate.now());
+
+        if (isExpired || "EXPIRED".equals(credential.getStatus())) {
             request.setStatus("FAILED");
         } else {
             request.setStatus("SUCCESS");
         }
 
-        // Audit Trail requirement
+        // Log Audit Event
         AuditTrailRecord audit = new AuditTrailRecord();
         audit.setCredentialId(credential.getId());
+        audit.setEventTime(LocalDateTime.now());
         auditService.logEvent(audit);
 
         return requestRepo.save(request);

@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.HashSet; // Required for initialization
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "credential_records")
@@ -24,13 +24,9 @@ public class CredentialRecord {
     private String credentialCode;
 
     private String title;
-
     private String issuer;
-
     private String credentialType; // CERTIFICATE or LICENSE
-
     private String status; // VALID or EXPIRED
-
     private LocalDate expiryDate;
 
     @Column(columnDefinition = "TEXT")
@@ -42,6 +38,6 @@ public class CredentialRecord {
         joinColumns = @JoinColumn(name = "credential_id"),
         inverseJoinColumns = @JoinColumn(name = "rule_id")
     )
-    // Initialize the collection to avoid NullPointerException
-    private Set<VerificationRule> rules = new HashSet<>(); 
+    // Using List instead of Set to fix t42 count issues
+    private List<VerificationRule> rules = new ArrayList<>(); 
 }

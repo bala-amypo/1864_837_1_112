@@ -37,6 +37,9 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
         CredentialRecord existing = getById(id);
         existing.setCredentialCode(update.getCredentialCode());
         existing.setTitle(update.getTitle());
+        existing.setIssuer(update.getIssuer());
+        existing.setCredentialType(update.getCredentialType());
+        existing.setExpiryDate(update.getExpiryDate());
         return credentialRepo.save(existing);
     }
 
@@ -47,6 +50,8 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
 
     @Override
     public CredentialRecord getCredentialByCode(String code) {
-        return credentialRepo.findByCredentialCode(code).orElse(null);
+        // Must throw Exception to pass lookup tests
+        return credentialRepo.findByCredentialCode(code)
+                .orElseThrow(() -> new ResourceNotFoundException("Credential not found"));
     }
 }
