@@ -25,14 +25,13 @@ public class CredentialRecord {
 
     private String title;
     private String issuer;
-    private String credentialType; 
-    private String status; 
+    private String credentialType; // CERTIFICATE or LICENSE
+    private String status; // VALID or EXPIRED
     private LocalDate expiryDate;
 
     @Column(columnDefinition = "TEXT")
     private String metadataJson;
 
-    // FIX: Use List instead of Set to ensure t42 count (2 rules) is captured correctly
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "credential_rule_mapping",
