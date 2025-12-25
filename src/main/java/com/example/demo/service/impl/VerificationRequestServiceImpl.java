@@ -38,26 +38,10 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
         VerificationRequest request = requestRepo.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
         
-        CredentialRecord credential = null;
+        // Use ID for lookup as code field doesn't exist in Request entity
+        CredentialRecord credential = credentialService.getById(request.getCredentialId());
 
-        // Robust Lookup: Try ID first, then Code
-        if (request.getCredentialId() != null) {
-            try {
-                credential = credentialService.getById(request.getCredentialId());
-            } catch (ResourceNotFoundException e) {
-                // Fallback to code if ID lookup fails
-            }
-        }
-        
-        if (credential == null && request.getCredentialCode() != null) {
-            credential = credentialService.getCredentialByCode(request.getCredentialCode());
-        }
-
-        if (credential == null) {
-            throw new ResourceNotFoundException("Credential not found");
-        }
-
-        // Processing Logic
+        // Logic for success/failure
         boolean isExpired = credential.getExpiryDate() != null && 
                            credential.getExpiryDate().isBefore(LocalDate.now());
 
@@ -67,10 +51,10 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
             request.setStatus("SUCCESS");
         }
 
-        // Log Audit Event
+        // Audit Trail requirement - Fixed field name to 'loggedAt'
         AuditTrailRecord audit = new AuditTrailRecord();
         audit.setCredentialId(credential.getId());
-        audit.setEventTime(LocalDateTime.now());
+        audit.setLoggedAt(LocalDateTime.now()); 
         auditService.logEvent(audit);
 
         return requestRepo.save(request);
