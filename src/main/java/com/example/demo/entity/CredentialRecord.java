@@ -25,8 +25,8 @@ public class CredentialRecord {
 
     private String title;
     private String issuer;
-    private String credentialType; // CERTIFICATE or LICENSE
-    private String status; // VALID or EXPIRED
+    private String credentialType; 
+    private String status; 
     private LocalDate expiryDate;
 
     @Column(columnDefinition = "TEXT")
