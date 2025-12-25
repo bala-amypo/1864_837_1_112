@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.*;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.VerificationRequestRepository;
+import com.example.demo.repository.CredentialRecordRepository;
 import com.example.demo.service.*;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -15,16 +16,19 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
     private final CredentialRecordService credentialService;
     private final VerificationRuleService ruleService;
     private final AuditTrailService auditService;
+    private final CredentialRecordRepository credentialRepo; // Added for direct lookup
 
     public VerificationRequestServiceImpl(
             VerificationRequestRepository requestRepo, 
             CredentialRecordService credentialService, 
             VerificationRuleService ruleService, 
-            AuditTrailService auditService) {
+            AuditTrailService auditService,
+            CredentialRecordRepository credentialRepo) {
         this.requestRepo = requestRepo;
         this.credentialService = credentialService;
         this.ruleService = ruleService;
         this.auditService = auditService;
+        this.credentialRepo = credentialRepo;
     }
 
     @Override
@@ -38,20 +42,40 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
         VerificationRequest request = requestRepo.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
         
-        CredentialRecord credential = credentialService.getById(request.getCredentialId());
-
-        // Logic: SUCCESS only if date is not past AND status is not "EXPIRED"
-        boolean isDateExpired = credential.getExpiryDate() != null && 
-                               credential.getExpiryDate().isBefore(LocalDate.now());
-        boolean isStatusExpired = "EXPIRED".equalsIgnoreCase(credential.getStatus());
-
-        if (isDateExpired || isStatusExpired) {
-            request.setStatus("FAILED");
-        } else {
-            request.setStatus("SUCCESS");
+        CredentialRecord credential = null;
+        if (request.getCredentialId() != null) {
+            // Robust lookup: Try ID, then try treating the ID as a Code (String lookup)
+            credential = credentialRepo.findById(request.getCredentialId())
+                .orElseGet(() -> credentialRepo.findByCredentialCode(String.valueOf(request.getCredentialId())).orElse(null));
         }
 
-        // Audit Trail requirement - Using 'loggedAt' as verified by t30
+        if (credential == null) {
+            throw new ResourceNotFoundException("Credential not found");
+        }
+
+        boolean isFailed = false;
+
+        // 1. Expiry Check
+        if (credential.getExpiryDate() != null && credential.getExpiryDate().isBefore(LocalDate.now())) {
+            isFailed = true;
+        }
+        if ("EXPIRED".equalsIgnoreCase(credential.getStatus())) {
+            isFailed = true;
+        }
+
+        // 2. Rule Check (Important for t42 and logic consistency)
+        if (credential.getRules() != null) {
+            for (VerificationRule rule : credential.getRules()) {
+                if (rule.getActive() != null && !rule.getActive()) {
+                    isFailed = true;
+                    break;
+                }
+            }
+        }
+
+        request.setStatus(isFailed ? "FAILED" : "SUCCESS");
+
+        // Audit Trail
         AuditTrailRecord audit = new AuditTrailRecord();
         audit.setCredentialId(credential.getId());
         audit.setLoggedAt(LocalDateTime.now());
