@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.HashSet; // Required for initialization
 
 @Entity
 @Table(name = "credential_records")
@@ -41,5 +42,6 @@ public class CredentialRecord {
         joinColumns = @JoinColumn(name = "credential_id"),
         inverseJoinColumns = @JoinColumn(name = "rule_id")
     )
-    private Set<VerificationRule> rules;
+    // Initialize the collection to avoid NullPointerException
+    private Set<VerificationRule> rules = new HashSet<>(); 
 }
