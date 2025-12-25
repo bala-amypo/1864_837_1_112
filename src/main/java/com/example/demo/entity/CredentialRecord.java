@@ -25,19 +25,19 @@ public class CredentialRecord {
 
     private String title;
     private String issuer;
-    private String credentialType; // CERTIFICATE or LICENSE
-    private String status; // VALID or EXPIRED
+    private String credentialType; 
+    private String status; 
     private LocalDate expiryDate;
 
     @Column(columnDefinition = "TEXT")
     private String metadataJson;
 
+    // FIX: Use List instead of Set to ensure t42 count (2 rules) is captured correctly
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "credential_rule_mapping",
         joinColumns = @JoinColumn(name = "credential_id"),
         inverseJoinColumns = @JoinColumn(name = "rule_id")
     )
-    // Using List instead of Set to fix t42 count issues
     private List<VerificationRule> rules = new ArrayList<>(); 
 }
