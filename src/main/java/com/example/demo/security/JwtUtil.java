@@ -3,7 +3,6 @@ package com.example.demo.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -14,12 +13,12 @@ import java.util.Map;
 
 @Component
 public class JwtUtil {
-
-    @Value("${jwt.secret:digital_credential_verification_engine_secret_2025_engine}")
-    private String secret;
+    // Secret must be at least 32 characters for HS256
+    private final String SECRET_STRING = "33_DigitalCredentialVerificationEngine_SecretKey_2025_Unique";
+    private final long EXPIRATION_MS = 36000000; // 10 hours
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(SECRET_STRING.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(Long userId, String email, String role) {
@@ -28,17 +27,17 @@ public class JwtUtil {
         claims.put("role", role);
 
         return Jwts.builder()
-                .claims(claims)
+                .claims(claims) // Modern JJWT 0.12.x syntax
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 36000000))
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(getSigningKey())
                 .compact();
     }
 
     public String extractEmail(String token) {
         return Jwts.parser()
-                .verifyWith(getSigningKey())
+                .verifyWith(getSigningKey()) // Modern JJWT 0.12.x syntax
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()

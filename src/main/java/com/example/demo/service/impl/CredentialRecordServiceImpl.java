@@ -9,24 +9,42 @@ import java.util.List;
 
 @Service
 public class CredentialRecordServiceImpl implements CredentialRecordService {
-    private final CredentialRecordRepository repo;
-    public CredentialRecordServiceImpl(CredentialRecordRepository repo) { this.repo = repo; }
+    private final CredentialRecordRepository credentialRepo;
+
+    public CredentialRecordServiceImpl(CredentialRecordRepository credentialRepo) {
+        this.credentialRepo = credentialRepo;
+    }
+
+    // ADD THIS METHOD to fix the compilation error
+    @Override
+    public List<CredentialRecord> findAll() {
+        return credentialRepo.findAll();
+    }
 
     @Override
-    public CredentialRecord createCredential(CredentialRecord r) {
-        if (r.getExpiryDate() != null && r.getExpiryDate().isBefore(LocalDate.now())) {
-            r.setStatus("EXPIRED");
-        } else if (r.getStatus() == null) {
-            r.setStatus("VALID");
+    public CredentialRecord createCredential(CredentialRecord record) {
+        if (record.getExpiryDate() != null && record.getExpiryDate().isBefore(LocalDate.now())) {
+            record.setStatus("EXPIRED");
+        } else if (record.getStatus() == null) {
+            record.setStatus("VALID");
         }
-        return repo.save(r);
+        return credentialRepo.save(record);
+    }
+
+    @Override
+    public CredentialRecord updateCredential(Long id, CredentialRecord update) {
+        CredentialRecord existing = credentialRepo.findById(id).orElseThrow();
+        existing.setCredentialCode(update.getCredentialCode());
+        return credentialRepo.save(existing);
     }
 
     @Override
     public List<CredentialRecord> getCredentialsByHolder(Long holderId) {
-        // Required for the verification process logic above
-        return repo.findAll(); 
+        return credentialRepo.findByHolderId(holderId);
     }
-    
-    // Implement other standard repository wrapper methods...
+
+    @Override
+    public CredentialRecord getCredentialByCode(String code) {
+        return credentialRepo.findByCredentialCode(code).orElse(null);
+    }
 }
