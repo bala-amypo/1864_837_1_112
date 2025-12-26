@@ -5,4 +5,5 @@ public interface VerificationRequestService {
     VerificationRequest initiateVerification(VerificationRequest request);
     VerificationRequest processVerification(Long requestId);
     List<VerificationRequest> getRequestsByCredential(Long credentialId);
+    List<VerificationRequest> getAllRequests(); // MUST EXIST
 }

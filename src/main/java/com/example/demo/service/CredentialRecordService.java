@@ -1,13 +1,10 @@
 package com.example.demo.service;
-
 import com.example.demo.entity.CredentialRecord;
 import java.util.List;
-
 public interface CredentialRecordService {
     CredentialRecord createCredential(CredentialRecord record);
     CredentialRecord updateCredential(Long id, CredentialRecord update);
     List<CredentialRecord> getCredentialsByHolder(Long holderId);
     CredentialRecord getCredentialByCode(String code);
-    // Needed to fetch credential inside VerificationRequestService
-    CredentialRecord getById(Long id); 
+    List<CredentialRecord> getAllCredentials(); // MUST EXIST
 }

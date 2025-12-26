@@ -1,21 +1,22 @@
 package com.example.demo.entity;
-
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "verification_requests")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class VerificationRequest {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long credentialId;
+    private String status;
+    private LocalDateTime verifiedAt; // REQUIRED FIELD
 
-    private String status; // SUCCESS or FAILED
+    public VerificationRequest() {}
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getCredentialId() { return credentialId; }
+    public void setCredentialId(Long credentialId) { this.credentialId = credentialId; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public LocalDateTime getVerifiedAt() { return verifiedAt; }
+    public void setVerifiedAt(LocalDateTime verifiedAt) { this.verifiedAt = verifiedAt; }
 }
