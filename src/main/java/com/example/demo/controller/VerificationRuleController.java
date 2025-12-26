@@ -6,17 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/rules")
+@RequestMapping("/rules")
 public class VerificationRuleController {
-
-    private final VerificationRuleService ruleService;
-
-    public VerificationRuleController(VerificationRuleService ruleService) {
-        this.ruleService = ruleService;
-    }
+    private final VerificationRuleService service;
+    public VerificationRuleController(VerificationRuleService service) { this.service = service; }
 
     @PostMapping
     public ResponseEntity<VerificationRule> create(@RequestBody VerificationRule rule) {
-        return ResponseEntity.ok(ruleService.createRule(rule));
+        return ResponseEntity.ok(service.createRule(rule));
     }
 }

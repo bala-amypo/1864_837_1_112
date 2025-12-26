@@ -7,22 +7,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/audit")
+@RequestMapping("/audit")
 public class AuditTrailController {
-
-    private final AuditTrailService auditService;
-
-    public AuditTrailController(AuditTrailService auditService) {
-        this.auditService = auditService;
-    }
+    private final AuditTrailService service;
+    public AuditTrailController(AuditTrailService service) { this.service = service; }
 
     @PostMapping
     public ResponseEntity<AuditTrailRecord> log(@RequestBody AuditTrailRecord record) {
-        return ResponseEntity.ok(auditService.logEvent(record));
+        return ResponseEntity.ok(service.logEvent(record));
     }
 
     @GetMapping("/credential/{credentialId}")
     public ResponseEntity<List<AuditTrailRecord>> getByCredential(@PathVariable Long credentialId) {
-        return ResponseEntity.ok(auditService.getLogsByCredential(credentialId));
+        return ResponseEntity.ok(service.getLogsByCredential(credentialId));
     }
 }

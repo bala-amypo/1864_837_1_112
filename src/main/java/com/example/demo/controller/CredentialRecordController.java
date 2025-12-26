@@ -7,32 +7,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/credentials")
+@RequestMapping("/credentials")
 public class CredentialRecordController {
-
-    private final CredentialRecordService credentialService;
-
-    public CredentialRecordController(CredentialRecordService credentialService) {
-        this.credentialService = credentialService;
-    }
+    private final CredentialRecordService service;
+    public CredentialRecordController(CredentialRecordService service) { this.service = service; }
 
     @PostMapping
     public ResponseEntity<CredentialRecord> create(@RequestBody CredentialRecord record) {
-        return ResponseEntity.ok(credentialService.createCredential(record));
+        return ResponseEntity.ok(service.createCredential(record));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CredentialRecord> update(@PathVariable Long id, @RequestBody CredentialRecord update) {
-        return ResponseEntity.ok(credentialService.updateCredential(id, update));
+    public ResponseEntity<CredentialRecord> update(@PathVariable Long id, @RequestBody CredentialRecord record) {
+        return ResponseEntity.ok(service.updateCredential(id, record));
     }
 
     @GetMapping("/holder/{holderId}")
     public ResponseEntity<List<CredentialRecord>> getByHolder(@PathVariable Long holderId) {
-        return ResponseEntity.ok(credentialService.getCredentialsByHolder(holderId));
+        return ResponseEntity.ok(service.getCredentialsByHolder(holderId));
     }
 
     @GetMapping("/code/{code}")
     public ResponseEntity<CredentialRecord> getByCode(@PathVariable String code) {
-        return ResponseEntity.ok(credentialService.getCredentialByCode(code));
+        // Test t16 expects null body if not found, not an exception
+        return ResponseEntity.ok(service.getCredentialByCode(code));
     }
 }

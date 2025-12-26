@@ -6,22 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/verification")
+@RequestMapping("/verifications")
 public class VerificationRequestController {
-
-    private final VerificationRequestService verificationService;
-
-    public VerificationRequestController(VerificationRequestService verificationService) {
-        this.verificationService = verificationService;
-    }
+    private final VerificationRequestService service;
+    public VerificationRequestController(VerificationRequestService service) { this.service = service; }
 
     @PostMapping
     public ResponseEntity<VerificationRequest> initiate(@RequestBody VerificationRequest request) {
-        return ResponseEntity.ok(verificationService.initiateVerification(request));
-    }
-
-    @PutMapping("/{id}/process")
-    public ResponseEntity<VerificationRequest> process(@PathVariable Long id) {
-        return ResponseEntity.ok(verificationService.processVerification(id));
+        return ResponseEntity.ok(service.initiateVerification(request));
     }
 }
