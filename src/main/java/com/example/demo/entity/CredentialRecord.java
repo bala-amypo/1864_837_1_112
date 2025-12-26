@@ -16,7 +16,7 @@ public class CredentialRecord {
     private String credentialCode;
     private String title;
     private String issuer;
-    private String credentialType; // Ensure this is exactly 'credentialType'
+    private String credentialType; // Field name used in repository query
     private String status;
     private LocalDate expiryDate;
     private String metadataJson;
