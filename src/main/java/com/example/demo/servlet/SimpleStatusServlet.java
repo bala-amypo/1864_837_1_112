@@ -10,12 +10,12 @@ import java.io.PrintWriter;
 public class SimpleStatusServlet extends HttpServlet {
 
     @Override
-    // CHANGED FROM protected TO public TO ALLOW TEST ACCESS
+    // Changed to public so the test class in com.example.demo can access it
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/plain");
         PrintWriter out = resp.getWriter();
         
-        // Exact text required by Test t01 and t08
+        // Exact text required by the Test Suite
         out.print("Digital Credential Verification Engine is running");
         out.flush();
     }
