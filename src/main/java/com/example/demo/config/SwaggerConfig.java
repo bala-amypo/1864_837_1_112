@@ -1,23 +1,200 @@
 package com.example.demo.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import java.util.List;
 
 @Configuration
-@OpenAPIDefinition(
-    info = @Info(title = "Digital Credential Verification Engine API", version = "1.0"),
-    security = @SecurityRequirement(name = "bearerAuth")
-)
-@SecurityScheme(
-    name = "bearerAuth",
-    type = SecuritySchemeType.HTTP,
-    scheme = "bearer",
-    bearerFormat = "JWT"
-)
-public class SwaggerConfig {
-    // This class provides the metadata for Swagger UI and JWT Support in the UI
+public class OpenApiConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                // Constant standard configuration
+                .servers(List.of(
+                        new Server().url("https://9191.408procr.amypo.ai/")
+                ));
+    }
 }
+
+
+package com.example.demo.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.util.List;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        // As per PDF Section 10: Enable Swagger/OpenAPI for the Engine
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Digital Credential Verification Engine API")
+                        .version("1.0")
+                        .description("API documentation for the Academic Integrity Case Tracker"))
+                .servers(List.of(
+                        // Keeping your specific server environment URL
+                        new Server().url("https://9191.408procr.amypo.ai/")
+                ));
+    }
+}
+
+
+
+
+package com.example.demo.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.util.List;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        // As per PDF Section 10: Enable Swagger/OpenAPI for the Engine
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Digital Credential Verification Engine API")
+                        .version("1.0")
+                        .description("API documentation for the Academic Integrity Case Tracker"))
+                .servers(List.of(
+                        // Keeping your specific server environment URL
+                        new Server().url("https://9191.408procr.amypo.ai/")
+                ));
+    }
+}package com.example.demo.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.util.List;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        // As per PDF Section 10: Enable Swagger/OpenAPI for the Engine
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Digital Credential Verification Engine API")
+                        .version("1.0")
+                        .description("API documentation for the Academic Integrity Case Tracker"))
+                .servers(List.of(
+                        // Keeping your specific server environment URL
+                        new Server().url("https://9191.408procr.amypo.ai/")
+                ));
+    }
+}package com.example.demo.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.util.List;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        // As per PDF Section 10: Enable Swagger/OpenAPI for the Engine
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Digital Credential Verification Engine API")
+                        .version("1.0")
+                        .description("API documentation for the Academic Integrity Case Tracker"))
+                .servers(List.of(
+                        // Keeping your specific server environment URL
+                        new Server().url("https://9191.408procr.amypo.ai/")
+                ));
+    }
+}package com.example.demo.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.util.List;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        // As per PDF Section 10: Enable Swagger/OpenAPI for the Engine
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Digital Credential Verification Engine API")
+                        .version("1.0")
+                        .description("API documentation for the Academic Integrity Case Tracker"))
+                .servers(List.of(
+                        // Keeping your specific server environment URL
+                        new Server().url("https://9191.408procr.amypo.ai/")
+                ));
+    }
+}package com.example.demo.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.util.List;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        // As per PDF Section 10: Enable Swagger/OpenAPI for the Engine
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Digital Credential Verification Engine API")
+                        .version("1.0")
+                        .description("API documentation for the Academic Integrity Case Tracker"))
+                .servers(List.of(
+                        // Keeping your specific server environment URL
+                        new Server().url("https://9191.408procr.amypo.ai/")
+                ));
+    }
+}package com.example.demo.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.util.List;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        // As per PDF Section 10: Enable Swagger/OpenAPI for the Engine
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Digital Credential Verification Engine API")
+                        .version("1.0")
+                        .description("API documentation for the Academic Integrity Case Tracker"))
+                .servers(List.of(
+                        // Keeping your specific server environment URL
+                        new Server().url("https://9191.408procr.amypo
