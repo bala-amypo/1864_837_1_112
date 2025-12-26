@@ -7,7 +7,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/> 
     </parent>
 
     <groupId>com.example</groupId>
@@ -20,7 +20,6 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Starters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -33,22 +32,18 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
-        <!-- Database -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
-
-        <!-- Lombok (to handle @Data in entities) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- JJWT for JWT Authentication -->
+        <!-- JJWT for Security -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -67,14 +62,14 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Swagger / OpenAPI -->
+        <!-- Swagger -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.3.0</version>
         </dependency>
 
-        <!-- Testing (Critical: Must use TestNG for your provided test file) -->
+        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -97,12 +92,12 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
-<build>
-        <!-- Tells Maven that the test file is located in src/main/java -->
-        <testSourceDirectory>src/main/java</testSourceDirectory>
 
+    <build>
+        <!-- STEP 1: Tell Maven the test file is in src/main/java -->
+        <testSourceDirectory>src/main/java</testSourceDirectory>
+        
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -114,9 +109,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
-                    <!-- Removed suiteXmlFiles tag to allow scanning for @Test annotations -->
+                    <!-- STEP 2: REMOVED suiteXmlFiles entirely to allow class scanning -->
                     <includes>
-                        <!-- Ensure this matches your test class filename -->
                         <include>**/DigitalCredentialVerificationEngineTest.java</include>
                     </includes>
                     <properties>
@@ -127,7 +121,7 @@
                     </properties>
                 </configuration>
                 <dependencies>
-                    <!-- This dependency forces Maven to use the TestNG runner -->
+                    <!-- STEP 3: Force TestNG runner -->
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-testng</artifactId>
@@ -137,5 +131,4 @@
             </plugin>
         </plugins>
     </build>
- 
 </project>
