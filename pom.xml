@@ -99,11 +99,10 @@
         </dependency>
 
     </dependencies>
-
-  <build>
-        <!-- CRITICAL: Tells Maven that the test file is in src/main/java -->
+<build>
+        <!-- Tells Maven that the test file is located in src/main/java -->
         <testSourceDirectory>src/main/java</testSourceDirectory>
-        
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -115,8 +114,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
+                    <!-- Removed suiteXmlFiles tag to allow scanning for @Test annotations -->
                     <includes>
-                        <!-- Matches your test filename exactly -->
+                        <!-- Ensure this matches your test class filename -->
                         <include>**/DigitalCredentialVerificationEngineTest.java</include>
                     </includes>
                     <properties>
@@ -127,7 +127,7 @@
                     </properties>
                 </configuration>
                 <dependencies>
-                    <!-- Forces Maven to use the TestNG engine -->
+                    <!-- This dependency forces Maven to use the TestNG runner -->
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-testng</artifactId>
@@ -137,4 +137,5 @@
             </plugin>
         </plugins>
     </build>
+ 
 </project>

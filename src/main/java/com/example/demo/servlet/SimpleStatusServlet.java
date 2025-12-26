@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 public class SimpleStatusServlet extends HttpServlet {
 
     @Override
-    // Must be public for the test package to access it
+    // MUST BE PUBLIC
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getParameter("status");
         PrintWriter writer = resp.getWriter();
