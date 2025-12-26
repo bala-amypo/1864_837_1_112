@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface VerificationRuleRepository extends JpaRepository<VerificationRule, Long> {
+    // Required to fetch active rules for the verification process
     List<VerificationRule> findByActiveTrue();
 }
