@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +16,7 @@ public class CredentialRecord {
     private String credentialCode;
     private String title;
     private String issuer;
-    private String credentialType;
+    private String credentialType; // Ensure this is exactly 'credentialType'
     private String status;
     private LocalDate expiryDate;
     private String metadataJson;
