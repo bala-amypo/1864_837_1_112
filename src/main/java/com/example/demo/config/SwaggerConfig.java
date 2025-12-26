@@ -1,7 +1,10 @@
 package com.example.demo.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,15 +15,24 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        // As per PDF Section 10: Enable Swagger/OpenAPI for the Engine
+        final String securitySchemeName = "bearerAuth";
+        
         return new OpenAPI()
                 .info(new Info()
                         .title("Digital Credential Verification Engine API")
                         .version("1.0")
                         .description("API documentation for the Academic Integrity Case Tracker"))
                 .servers(List.of(
-                        // Keeping your specific server environment URL
                         new Server().url("https://9191.408procr.amypo.ai/")
-                ));
+                ))
+                // Adds JWT Bearer Token support to Swagger UI
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName,
+                                new SecurityScheme()
+                                        .name(securitySchemeName)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
     }
 }
