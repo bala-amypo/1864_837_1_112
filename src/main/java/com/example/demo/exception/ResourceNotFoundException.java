@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Thrown when a requested resource (User, Credential, etc.) is missing.
- * Maps automatically to HTTP 404 Not Found.
+ * Runtime exception used when a requested resource (such as user or holder) is missing.
+ * Mapped to 404 Not Found.
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
