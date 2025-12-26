@@ -4,5 +4,4 @@ import com.example.demo.entity.CredentialHolderProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CredentialHolderProfileRepository extends JpaRepository<CredentialHolderProfile, Long> {
-    // Standard CRUD methods inherited from JpaRepository are sufficient
 }
