@@ -18,6 +18,7 @@
     </properties>
 
     <dependencies>
+        <!-- Core Spring Boot dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -40,6 +41,8 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- JJWT for JWT Authentication -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -57,24 +60,27 @@
             <version>0.11.5</version>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- Swagger -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.3.0</version>
         </dependency>
+
+        <!-- Testing: Explicitly exclude JUnit to force TestNG -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <!-- Exclude JUnit to force TestNG -->
             <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.junit.jupiter</groupId>
                     <artifactId>junit-jupiter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -92,8 +98,6 @@
     </dependencies>
 
     <build>
-        <!-- CRITICAL: Tells Maven to find tests in src/main/java -->
-        <testSourceDirectory>src/main/java</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -105,7 +109,7 @@
                 <version>3.1.2</version>
                 <configuration>
                     <includes>
-                        <!-- Explicitly name the test file -->
+                        <!-- PDF Requirement: Ensure the test file is included -->
                         <include>**/DigitalCredentialVerificationEngineTest.java</include>
                     </includes>
                     <properties>
@@ -114,10 +118,9 @@
                             <value>false</value>
                         </property>
                     </properties>
-                    <!-- Force the TestNG provider -->
-                    <threadCount>1</threadCount>
                 </configuration>
                 <dependencies>
+                    <!-- This forces the TestNG engine to run the tests -->
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-testng</artifactId>
