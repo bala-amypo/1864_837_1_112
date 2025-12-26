@@ -20,3 +20,7 @@ public class VerificationRequest {
     public LocalDateTime getVerifiedAt() { return verifiedAt; }
     public void setVerifiedAt(LocalDateTime verifiedAt) { this.verifiedAt = verifiedAt; }
 }
+
+
+
+
