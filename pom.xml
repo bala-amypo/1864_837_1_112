@@ -105,25 +105,33 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
-            <!-- Maven Surefire Plugin configured to run TestNG tests -->
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
-                    <suiteXmlFiles>
-                        <!-- Optional: if you have a testng.xml file -->
-                    </suiteXmlFiles>
+                    <includes>
+                        <!-- Ensures your specific test file is picked up -->
+                        <include>**/DigitalCredentialVerificationEngineTest.java</include>
+                    </includes>
+                    <properties>
+                        <!-- Required to use your custom TestResultListener output -->
+                        <property>
+                            <name>usedefaultlisteners</name>
+                            <value>false</value>
+                        </property>
+                    </properties>
                 </configuration>
+                <dependencies>
+                    <!-- CRITICAL: This dependency tells Maven to run TestNG tests -->
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-testng</artifactId>
+                        <version>3.1.2</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
