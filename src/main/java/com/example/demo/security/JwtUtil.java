@@ -11,10 +11,10 @@ import java.util.Map;
 
 @Component
 public class JwtUtil {
-    private final String SECRET = "digital_credential_verification_engine_secret_2025_unique_key";
+    private final String SECRET_STRING = "digital_credential_verification_engine_secret_2025_unique_key";
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(SECRET_STRING.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(Long userId, String email, String role) {
@@ -23,7 +23,7 @@ public class JwtUtil {
         claims.put("role", role);
 
         return Jwts.builder()
-                .claims(claims) // Requires JJWT 0.12.x
+                .claims(claims)
                 .subject(email)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 36000000))
@@ -33,10 +33,14 @@ public class JwtUtil {
 
     public String extractEmail(String token) {
         return Jwts.parser()
-                .verifyWith(getSigningKey()) // Requires JJWT 0.12.x
+                .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+    
+    public boolean validateToken(String token, String email) {
+        return extractEmail(token).equals(email);
     }
 }
