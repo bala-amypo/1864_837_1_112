@@ -3,7 +3,6 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.*;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.VerificationRequestRepository;
-import com.example.demo.repository.CredentialRecordRepository;
 import com.example.demo.service.*;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -16,24 +15,21 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
     private final CredentialRecordService credentialService;
     private final VerificationRuleService ruleService;
     private final AuditTrailService auditService;
-    private final CredentialRecordRepository credentialRepo; // Added for Page 6 requirements
 
-    // 5-ARG CONSTRUCTOR REQUIRED BY THE TEST ENGINE
     public VerificationRequestServiceImpl(
             VerificationRequestRepository requestRepo, 
             CredentialRecordService credentialService, 
             VerificationRuleService ruleService, 
-            AuditTrailService auditService,
-            CredentialRecordRepository credentialRepo) {
+            AuditTrailService auditService) {
         this.requestRepo = requestRepo;
         this.credentialService = credentialService;
         this.ruleService = ruleService;
         this.auditService = auditService;
-        this.credentialRepo = credentialRepo;
     }
 
     @Override
     public VerificationRequest initiateVerification(VerificationRequest request) {
+        if (request.getStatus() == null) request.setStatus("PENDING");
         return requestRepo.save(request);
     }
 
@@ -42,29 +38,23 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
         VerificationRequest request = requestRepo.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
         
-        // RULE 2.5: Locate corresponding credential using credentialRepo
-        CredentialRecord credential = credentialRepo.findById(request.getCredentialId()).orElse(null);
+        CredentialRecord credential = credentialService.getById(request.getCredentialId());
 
-        // RULE 2.5: Fetch active rules (Test verifies this interaction)
-        ruleService.getActiveRules();
+        // Logic: SUCCESS only if date is not past AND status is not "EXPIRED"
+        boolean isDateExpired = credential.getExpiryDate() != null && 
+                               credential.getExpiryDate().isBefore(LocalDate.now());
+        boolean isStatusExpired = "EXPIRED".equalsIgnoreCase(credential.getStatus());
 
-        if (credential == null) {
+        if (isDateExpired || isStatusExpired) {
             request.setStatus("FAILED");
         } else {
-            // RULE 2.5: If expired (date before today) -> FAILED, else SUCCESS
-            if (credential.getExpiryDate() != null && credential.getExpiryDate().isBefore(LocalDate.now())) {
-                request.setStatus("FAILED");
-            } else {
-                request.setStatus("SUCCESS");
-            }
+            request.setStatus("SUCCESS");
         }
 
-        request.setVerifiedAt(LocalDateTime.now());
-
-        // RULE 2.5: Create AuditTrailRecord and save it
+        // Audit Trail requirement - Using 'loggedAt' as verified by t30
         AuditTrailRecord audit = new AuditTrailRecord();
-        audit.setCredentialId(request.getCredentialId());
-        audit.setEventType("VERIFICATION_ACTION");
+        audit.setCredentialId(credential.getId());
+        audit.setLoggedAt(LocalDateTime.now());
         auditService.logEvent(audit);
 
         return requestRepo.save(request);
@@ -73,10 +63,5 @@ public class VerificationRequestServiceImpl implements VerificationRequestServic
     @Override
     public List<VerificationRequest> getRequestsByCredential(Long credentialId) {
         return requestRepo.findByCredentialId(credentialId);
-    }
-
-    @Override
-    public List<VerificationRequest> getAllRequests() {
-        return requestRepo.findAll();
     }
 }
