@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.CredentialRecord;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CredentialRecordRepository;
 import com.example.demo.service.CredentialRecordService;
 import org.springframework.stereotype.Service;
@@ -17,6 +16,11 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
     }
 
     @Override
+    public List<CredentialRecord> findAll() {
+        return credentialRepo.findAll();
+    }
+
+    @Override
     public CredentialRecord createCredential(CredentialRecord record) {
         if (record.getExpiryDate() != null && record.getExpiryDate().isBefore(LocalDate.now())) {
             record.setStatus("EXPIRED");
@@ -28,10 +32,8 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
 
     @Override
     public CredentialRecord updateCredential(Long id, CredentialRecord update) {
-        CredentialRecord existing = credentialRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Credential not found"));
+        CredentialRecord existing = credentialRepo.findById(id).orElseThrow();
         existing.setCredentialCode(update.getCredentialCode());
-        // Add other updatable fields as needed
         return credentialRepo.save(existing);
     }
 
