@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.CredentialRecord;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CredentialRecordRepository;
 import com.example.demo.service.CredentialRecordService;
 import org.springframework.stereotype.Service;
@@ -9,28 +10,38 @@ import java.util.List;
 
 @Service
 public class CredentialRecordServiceImpl implements CredentialRecordService {
-    private final CredentialRecordRepository repository;
+    private final CredentialRecordRepository credentialRepo;
 
-    public CredentialRecordServiceImpl(CredentialRecordRepository repository) {
-        this.repository = repository;
+    public CredentialRecordServiceImpl(CredentialRecordRepository credentialRepo) {
+        this.credentialRepo = credentialRepo;
     }
 
+    @Override
     public CredentialRecord createCredential(CredentialRecord record) {
         if (record.getExpiryDate() != null && record.getExpiryDate().isBefore(LocalDate.now())) {
             record.setStatus("EXPIRED");
         } else if (record.getStatus() == null) {
             record.setStatus("VALID");
         }
-        return repository.save(record);
+        return credentialRepo.save(record);
     }
 
+    @Override
     public CredentialRecord updateCredential(Long id, CredentialRecord update) {
-        CredentialRecord existing = repository.findById(id).orElseThrow();
+        CredentialRecord existing = credentialRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Credential not found"));
         existing.setCredentialCode(update.getCredentialCode());
-        // Copy other fields as per rules...
-        return repository.save(existing);
+        // Add other updatable fields as needed
+        return credentialRepo.save(existing);
     }
 
-    public List<CredentialRecord> getCredentialsByHolder(Long holderId) { return repository.findByHolderId(holderId); }
-    public CredentialRecord getCredentialByCode(String code) { return repository.findByCredentialCode(code).orElse(null); }
+    @Override
+    public List<CredentialRecord> getCredentialsByHolder(Long holderId) {
+        return credentialRepo.findByHolderId(holderId);
+    }
+
+    @Override
+    public CredentialRecord getCredentialByCode(String code) {
+        return credentialRepo.findByCredentialCode(code).orElse(null);
+    }
 }

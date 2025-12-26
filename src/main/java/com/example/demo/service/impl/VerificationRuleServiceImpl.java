@@ -8,7 +8,6 @@ import java.util.List;
 
 @Service
 public class VerificationRuleServiceImpl implements VerificationRuleService {
-
     private final VerificationRuleRepository ruleRepo;
 
     public VerificationRuleServiceImpl(VerificationRuleRepository ruleRepo) {
@@ -22,7 +21,6 @@ public class VerificationRuleServiceImpl implements VerificationRuleService {
 
     @Override
     public List<VerificationRule> getActiveRules() {
-        // Required for interaction verification in tests
         return ruleRepo.findByActiveTrue();
     }
 }
