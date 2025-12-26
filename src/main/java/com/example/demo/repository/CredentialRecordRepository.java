@@ -14,8 +14,9 @@ public interface CredentialRecordRepository extends JpaRepository<CredentialReco
     
     Optional<CredentialRecord> findByCredentialCode(String credentialCode);
     
-    // Requirement: Find credentials where expiryDate is before a given date
-    List<CredentialRecord> findExpiredBefore(LocalDate date);
+    // FIX: Added @Query to map the method name to the 'expiryDate' field
+    @Query("SELECT c FROM CredentialRecord c WHERE c.expiryDate < :date")
+    List<CredentialRecord> findExpiredBefore(@Param("date") LocalDate date);
 
     // Requirement: Must use HQL/JPQL via @Query
     @Query("SELECT c FROM CredentialRecord c WHERE c.status = :status")
