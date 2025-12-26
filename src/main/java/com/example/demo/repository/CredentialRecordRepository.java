@@ -14,16 +14,13 @@ public interface CredentialRecordRepository extends JpaRepository<CredentialReco
     
     Optional<CredentialRecord> findByCredentialCode(String credentialCode);
     
-    // FIX: Added @Query to map the method name to the 'expiryDate' field
+    // FIX: Explicit HQL mapping for the required method name
     @Query("SELECT c FROM CredentialRecord c WHERE c.expiryDate < :date")
     List<CredentialRecord> findExpiredBefore(@Param("date") LocalDate date);
 
-    // Requirement: Must use HQL/JPQL via @Query
     @Query("SELECT c FROM CredentialRecord c WHERE c.status = :status")
     List<CredentialRecord> findByStatusUsingHql(@Param("status") String status);
 
-    // Requirement: Must use HQL/JPQL via @Query
-    @Query("SELECT c FROM CredentialRecord c WHERE c.issuer = :issuer AND c.credentialType = :credentialType")
-    List<CredentialRecord> searchByIssuerAndType(@Param("issuer") String issuer, 
-                                                 @Param("credentialType") String credentialType);
+    @Query("SELECT c FROM CredentialRecord c WHERE c.issuer = :issuer AND c.credentialType = :type")
+    List<CredentialRecord> searchByIssuerAndType(@Param("issuer") String issuer, @Param("type") String type);
 }
