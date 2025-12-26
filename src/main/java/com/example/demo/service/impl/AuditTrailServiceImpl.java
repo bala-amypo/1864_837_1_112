@@ -9,22 +9,18 @@ import java.util.List;
 
 @Service
 public class AuditTrailServiceImpl implements AuditTrailService {
-    private final AuditTrailRecordRepository auditRepo;
+    private final AuditTrailRecordRepository repository;
 
-    public AuditTrailServiceImpl(AuditTrailRecordRepository auditRepo) {
-        this.auditRepo = auditRepo;
+    public AuditTrailServiceImpl(AuditTrailRecordRepository repository) {
+        this.repository = repository;
     }
 
-    @Override
     public AuditTrailRecord logEvent(AuditTrailRecord record) {
         if (record.getLoggedAt() == null) {
             record.setLoggedAt(LocalDateTime.now());
         }
-        return auditRepo.save(record);
+        return repository.save(record);
     }
 
-    @Override
-    public List<AuditTrailRecord> getLogsByCredential(Long credentialId) {
-        return auditRepo.findByCredentialId(credentialId);
-    }
+    public List<AuditTrailRecord> getLogsByCredential(Long id) { return repository.findByCredentialId(id); }
 }

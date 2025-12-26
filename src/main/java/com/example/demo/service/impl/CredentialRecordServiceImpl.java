@@ -9,32 +9,28 @@ import java.util.List;
 
 @Service
 public class CredentialRecordServiceImpl implements CredentialRecordService {
-    private final CredentialRecordRepository credentialRepo;
-    public CredentialRecordServiceImpl(CredentialRecordRepository repo) { this.credentialRepo = repo; }
+    private final CredentialRecordRepository repository;
 
-    @Override
-    public List<CredentialRecord> getAllCredentials() { return credentialRepo.findAll(); }
+    public CredentialRecordServiceImpl(CredentialRecordRepository repository) {
+        this.repository = repository;
+    }
 
-    @Override
-    public CredentialRecord getCredentialByCode(String code) {
-        // Test t16 expects null if not found
-        return credentialRepo.findByCredentialCode(code).orElse(null);
+    public CredentialRecord createCredential(CredentialRecord record) {
+        if (record.getExpiryDate() != null && record.getExpiryDate().isBefore(LocalDate.now())) {
+            record.setStatus("EXPIRED");
+        } else if (record.getStatus() == null) {
+            record.setStatus("VALID");
+        }
+        return repository.save(record);
     }
-    
-    @Override
-    public CredentialRecord getById(Long id) { return credentialRepo.findById(id).orElse(null); }
-    
-    @Override
-    public CredentialRecord createCredential(CredentialRecord r) {
-        if (r.getStatus() == null) r.setStatus("VALID");
-        if (r.getExpiryDate() != null && r.getExpiryDate().isBefore(LocalDate.now())) r.setStatus("EXPIRED");
-        return credentialRepo.save(r);
+
+    public CredentialRecord updateCredential(Long id, CredentialRecord update) {
+        CredentialRecord existing = repository.findById(id).orElseThrow();
+        existing.setCredentialCode(update.getCredentialCode());
+        // Copy other fields as per rules...
+        return repository.save(existing);
     }
-    
-    @Override public List<CredentialRecord> getCredentialsByHolder(Long id) { return credentialRepo.findByHolderId(id); }
-    @Override public CredentialRecord updateCredential(Long id, CredentialRecord u) {
-        CredentialRecord e = credentialRepo.findById(id).orElseThrow();
-        e.setCredentialCode(u.getCredentialCode());
-        return credentialRepo.save(e);
-    }
+
+    public List<CredentialRecord> getCredentialsByHolder(Long holderId) { return repository.findByHolderId(holderId); }
+    public CredentialRecord getCredentialByCode(String code) { return repository.findByCredentialCode(code).orElse(null); }
 }
