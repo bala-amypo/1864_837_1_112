@@ -100,7 +100,10 @@
 
     </dependencies>
 
-    <build>
+  <build>
+        <!-- CRITICAL: Tells Maven that the test file is in src/main/java -->
+        <testSourceDirectory>src/main/java</testSourceDirectory>
+        
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -113,11 +116,10 @@
                 <version>3.1.2</version>
                 <configuration>
                     <includes>
-                        <!-- Ensures your specific test file is picked up -->
+                        <!-- Matches your test filename exactly -->
                         <include>**/DigitalCredentialVerificationEngineTest.java</include>
                     </includes>
                     <properties>
-                        <!-- Required to use your custom TestResultListener output -->
                         <property>
                             <name>usedefaultlisteners</name>
                             <value>false</value>
@@ -125,7 +127,7 @@
                     </properties>
                 </configuration>
                 <dependencies>
-                    <!-- CRITICAL: This dependency tells Maven to run TestNG tests -->
+                    <!-- Forces Maven to use the TestNG engine -->
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-testng</artifactId>
