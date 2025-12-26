@@ -15,7 +15,6 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
         this.credentialRepo = credentialRepo;
     }
 
-    // ADD THIS METHOD to fix the compilation error
     @Override
     public List<CredentialRecord> findAll() {
         return credentialRepo.findAll();
@@ -30,21 +29,6 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
         }
         return credentialRepo.save(record);
     }
-
-    @Override
-    public CredentialRecord updateCredential(Long id, CredentialRecord update) {
-        CredentialRecord existing = credentialRepo.findById(id).orElseThrow();
-        existing.setCredentialCode(update.getCredentialCode());
-        return credentialRepo.save(existing);
-    }
-
-    @Override
-    public List<CredentialRecord> getCredentialsByHolder(Long holderId) {
-        return credentialRepo.findByHolderId(holderId);
-    }
-
-    @Override
-    public CredentialRecord getCredentialByCode(String code) {
-        return credentialRepo.findByCredentialCode(code).orElse(null);
-    }
+    
+    // Implement other methods (updateCredential, getCredentialsByHolder, etc.)
 }
