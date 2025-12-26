@@ -10,55 +10,65 @@ import java.util.List;
 
 @Service
 public class VerificationRequestServiceImpl implements VerificationRequestService {
-    private final VerificationRequestRepository requestRepo;
+
+    private final VerificationRequestRepository verificationRequestRepo;
     private final CredentialRecordService credentialService;
     private final VerificationRuleService ruleService;
     private final AuditTrailService auditService;
 
-    public VerificationRequestServiceImpl(VerificationRequestRepository requestRepo, 
-                                          CredentialRecordService credentialService, 
-                                          VerificationRuleService ruleService, 
-                                          AuditTrailService auditService) {
-        this.requestRepo = requestRepo;
-        this.credentialService = credentialService;
-        this.ruleService = ruleService;
-        this.auditService = auditService;
+    public VerificationRequestServiceImpl(VerificationRequestRepository vrRepo,
+                                          CredentialRecordService crService,
+                                          VerificationRuleService rService,
+                                          AuditTrailService aService) {
+        this.verificationRequestRepo = vrRepo;
+        this.credentialService = crService;
+        this.ruleService = rService;
+        this.auditService = aService;
     }
 
     @Override
     public VerificationRequest initiateVerification(VerificationRequest request) {
-        return requestRepo.save(request);
-    }
-
-    @Override
-    public List<VerificationRequest> getRequestsByCredential(Long id) {
-        return requestRepo.findByCredentialId(id);
+        return verificationRequestRepo.save(request);
     }
 
     @Override
     public VerificationRequest processVerification(Long requestId) {
-        VerificationRequest req = requestRepo.findById(requestId)
+        // 1. Load request
+        VerificationRequest request = verificationRequestRepo.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
 
-        // Match Logic for Test 61/62: These tests mock credentialRepo.findAll()
-        CredentialRecord cred = credentialService.findAll().stream()
-                .filter(c -> c.getId().equals(req.getCredentialId()))
+        // 2. Locate corresponding credential
+        CredentialRecord credential = credentialService.getAllCredentials().stream()
+                .filter(c -> c.getId().equals(request.getCredentialId()))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Credential not found"));
 
-        // Rule: Fetch active rules (required for test interaction)
+        // 3. Fetch active rules (required by logic rule)
         ruleService.getActiveRules();
 
-        if (cred.getExpiryDate() != null && cred.getExpiryDate().isBefore(LocalDate.now())) {
-            req.setStatus("FAILED");
+        // 4. Expiry check logic
+        if (credential.getExpiryDate() != null && credential.getExpiryDate().isBefore(LocalDate.now())) {
+            request.setStatus("FAILED");
         } else {
-            req.setStatus("SUCCESS");
+            request.setStatus("SUCCESS");
         }
 
+        // 5. Create Audit Record
         AuditTrailRecord audit = new AuditTrailRecord();
-        audit.setCredentialId(cred.getId());
+        audit.setCredentialId(credential.getId());
         auditService.logEvent(audit);
 
-        return requestRepo.save(req);
+        // 6. Save and return
+        return verificationRequestRepo.save(request);
+    }
+
+    @Override
+    public List<VerificationRequest> getRequestsByCredential(Long credentialId) {
+        return verificationRequestRepo.findByCredentialId(credentialId);
+    }
+
+    @Override
+    public List<VerificationRequest> getAllRequests() {
+        return verificationRequestRepo.findAll();
     }
 }

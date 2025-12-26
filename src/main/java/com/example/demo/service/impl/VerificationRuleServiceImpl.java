@@ -8,6 +8,7 @@ import java.util.List;
 
 @Service
 public class VerificationRuleServiceImpl implements VerificationRuleService {
+
     private final VerificationRuleRepository ruleRepo;
 
     public VerificationRuleServiceImpl(VerificationRuleRepository ruleRepo) {
@@ -20,7 +21,19 @@ public class VerificationRuleServiceImpl implements VerificationRuleService {
     }
 
     @Override
+    public VerificationRule updateRule(Long id, VerificationRule updatedRule) {
+        VerificationRule existing = ruleRepo.findById(id).orElseThrow();
+        existing.setActive(updatedRule.getActive());
+        return ruleRepo.save(existing);
+    }
+
+    @Override
     public List<VerificationRule> getActiveRules() {
         return ruleRepo.findByActiveTrue();
+    }
+
+    @Override
+    public List<VerificationRule> getAllRules() {
+        return ruleRepo.findAll();
     }
 }
