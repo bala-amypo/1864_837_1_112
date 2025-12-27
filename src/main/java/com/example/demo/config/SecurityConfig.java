@@ -27,7 +27,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ✅ REQUIRED FOR LOGIN (FIXES 500)
+    // ✅ REQUIRED: UserDetailsService (fixes login 500)
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
         return email -> userRepository.findByEmail(email)
@@ -44,12 +44,16 @@ public class SecurityConfig {
                 );
     }
 
-    // ✅ PASSWORD ENCODER (ALREADY CORRECT)
+    // ✅ PASSWORD ENCODER
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ AUTH MANAGER (ALREADY CORRECT)
+    // ✅ AUTHENTICATION MANAGER
     @Bean
     public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+}
