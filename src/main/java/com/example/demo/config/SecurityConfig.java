@@ -27,7 +27,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ✅ REQUIRED: UserDetailsService (fixes login 500)
+    
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
         return email -> userRepository.findByEmail(email)
