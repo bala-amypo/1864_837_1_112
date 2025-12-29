@@ -44,13 +44,13 @@ public class SecurityConfig {
                 );
     }
 
-    // ✅ PASSWORD ENCODER
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ AUTHENTICATION MANAGER
+    
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration config) throws Exception {
