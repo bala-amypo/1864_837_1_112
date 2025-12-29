@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class CredentialHolderProfile {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)//AUTO GENERATE
     private Long id;
 
     @Column(unique = true)
